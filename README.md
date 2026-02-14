@@ -1,6 +1,22 @@
-# PyJockie
+<p align="center">
+  <img src="resources/icon.png" alt="PyJockie" width="128" height="128">
+</p>
 
-A macOS menu bar app that streams Spotify audio into a Discord voice channel via Spotify Connect. Control playback entirely from the Spotify app.
+<h1 align="center">PyJockie</h1>
+
+<p align="center">
+  A macOS menu bar app that streams Spotify audio into a Discord voice channel via Spotify Connect.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/version-1.0.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/platform-macOS-lightgrey?logo=apple" alt="Platform">
+  <img src="https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/discord.py-2.6-5865F2?logo=discord&logoColor=white" alt="discord.py">
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
+</p>
+
+---
 
 ## How It Works
 
