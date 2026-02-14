@@ -12,13 +12,16 @@ APP_NAME = "PyJockie"
 
 OPTIONS = {
     "argv_emulation": False,
-    "iconfile": "resources/icon.icns",
+    "excludes": ["pyJockie.icon"],
+    "iconfile": "resources/pyJockie.icns",
     "plist": {
         "CFBundleName": APP_NAME,
         "CFBundleDisplayName": APP_NAME,
         "CFBundleIdentifier": "com.pyjockie.app",
         "CFBundleVersion": "0.1.0",
         "CFBundleShortVersionString": "0.1.0",
+        "CFBundleIconFile": "pyJockie",
+        "CFBundleIconName": "pyJockie",
         "LSUIElement": True,
     },
     "packages": ["discord", "aiohttp", "rumps", "bot"],

@@ -7,7 +7,7 @@ APP_NAME   := PyJockie
 APP_BUNDLE := dist/$(APP_NAME).app
 RESOURCES  := $(APP_BUNDLE)/Contents/Resources
 
-.PHONY: help install sync build clean run dev install-app check patch-py2app
+.PHONY: help install sync build clean run dev install-app check patch-py2app icon
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -21,16 +21,28 @@ sync: install ## Alias for install
 patch-py2app: ## Patch py2app zlib bug for uv-managed Python
 	@$(PYTHON) scripts/patch-py2app.py
 
-build: install patch-py2app ## Build PyJockie.app bundle
+icon: ## Compile .icon into Assets.car + .icns (requires Xcode)
+	@echo "==> Compiling icon with actool..."
+	@xcrun actool pyJockie.icon \
+		--app-icon pyJockie \
+		--compile resources \
+		--output-partial-info-plist /dev/null \
+		--minimum-deployment-target 26.0 \
+		--platform macosx \
+		--target-device mac
+	@echo "  Generated Assets.car + pyJockie.icns"
+
+build: install patch-py2app icon ## Build PyJockie.app bundle
 	@echo "==> Cleaning previous build..."
 	rm -rf build dist
 	@echo "==> Building .app with py2app..."
-	$(PYTHON) setup.py py2app
+	$(PYTHON) setup.py py2app > build.log 2>&1 || (tail -5 build.log; exit 1)
 	@echo "==> Copying bundled binaries..."
 	cp "$$(which librespot)" "$(RESOURCES)/librespot"
 	chmod +x "$(RESOURCES)/librespot"
 	cp "$$(which ffmpeg)" "$(RESOURCES)/ffmpeg"
 	chmod +x "$(RESOURCES)/ffmpeg"
+	cp resources/Assets.car "$(RESOURCES)/Assets.car"
 	@if [ -f /opt/homebrew/lib/libopus.dylib ]; then \
 		cp /opt/homebrew/lib/libopus.dylib "$(RESOURCES)/libopus.dylib"; \
 		echo "  Copied libopus"; \
@@ -42,7 +54,7 @@ build: install patch-py2app ## Build PyJockie.app bundle
 	@du -sh "$(APP_BUNDLE)"
 
 clean: ## Remove build artifacts
-	rm -rf build dist *.egg-info .eggs
+	rm -rf build dist *.egg-info .eggs build.log
 
 run: install ## Run the menu bar app (development)
 	$(UV) run python app.py
