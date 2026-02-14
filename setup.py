@@ -1,9 +1,14 @@
+"""
+py2app build configuration.
+
+This file exists because py2app requires setup.py — it does not support
+PEP 517 build backends. All project metadata and dependencies live in
+pyproject.toml. Build with: make build
+"""
 from setuptools import setup
 
 APP = ["app.py"]
 APP_NAME = "PyJockie"
-
-DATA_FILES = []
 
 OPTIONS = {
     "argv_emulation": False,
@@ -34,7 +39,6 @@ OPTIONS = {
 setup(
     name=APP_NAME,
     app=APP,
-    data_files=DATA_FILES,
+    data_files=[],
     options={"py2app": OPTIONS},
-    setup_requires=["py2app"],
 )

@@ -20,13 +20,7 @@ fi
 export FIFO_PATH="${FIFO_PATH:-/tmp/spotify.fifo}"
 export EVENT_PORT="${EVENT_PORT:-8080}"
 
-# Ensure venv exists
-if [ ! -d "$PROJECT_DIR/.venv" ]; then
-    echo "Creating virtual environment..."
-    uv venv "$PROJECT_DIR/.venv"
-    uv pip install -r "$PROJECT_DIR/bot/requirements.txt"
-fi
-
+cd "$PROJECT_DIR"
 echo "Starting PyJockie bot..."
 echo "FIFO: $FIFO_PATH | Event port: $EVENT_PORT"
-exec "$PROJECT_DIR/.venv/bin/python" "$PROJECT_DIR/bot/main.py"
+exec uv run python bot/main.py

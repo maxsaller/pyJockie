@@ -25,11 +25,11 @@ Spotify App (phone/PC)
 # Install system dependencies
 brew install librespot ffmpeg opus
 
-# Install Python dependencies
-uv venv && uv pip install -r bot/requirements.txt
+# Install Python dependencies (requires uv)
+make install
 
 # Run the menu bar app
-python app.py
+make run
 ```
 
 On first launch, the app will prompt for your Discord bot token.
@@ -37,10 +37,17 @@ On first launch, the app will prompt for your Discord bot token.
 ## Building the App
 
 ```bash
-scripts/build-app.sh
+# Verify system dependencies
+make check
+
+# Build the .app bundle
+make build
+
+# Or build and install to /Applications
+make install-app
 ```
 
-This produces `dist/PyJockie.app` — a self-contained app bundling Python, librespot, ffmpeg, and libopus. Drag it to `/Applications` to install.
+This produces `dist/PyJockie.app` — a self-contained app bundling Python, librespot, ffmpeg, and libopus.
 
 ## Usage
 
