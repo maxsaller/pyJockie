@@ -8,7 +8,12 @@ import threading
 import rumps
 
 # Ensure bot/ is importable
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "bot"))
+if getattr(sys, "frozen", False):
+    # Inside .app bundle: bot modules are in Resources root
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+else:
+    # Development: bot modules are in bot/ subdirectory
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "bot"))
 
 from config import get_discord_token, set_discord_token
 from state import state
