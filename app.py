@@ -154,10 +154,29 @@ class PyJockieApp(rumps.App):
                 "--device", FIFO_PATH,
                 "--bitrate", "320",
                 "--format", "S16",
+                "--verbose",
             ],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.PIPE,
         )
+
+        # Read librespot stderr in a background thread to prevent pipe deadlock
+        # and surface any errors in our logs
+        threading.Thread(
+            target=self._log_librespot_stderr,
+            daemon=True,
+            name="librespot-stderr",
+        ).start()
+
+    def _log_librespot_stderr(self):
+        """Forward librespot stderr to our logger."""
+        proc = self._librespot_proc
+        if not proc or not proc.stderr:
+            return
+        for line in proc.stderr:
+            text = line.decode("utf-8", errors="replace").rstrip()
+            if text:
+                log.info("[librespot] %s", text)
 
     def _start_bot(self, token: str):
         """Start the Discord bot on a background thread."""

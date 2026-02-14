@@ -11,3 +11,4 @@ build/
 build.log
 dist/
 resources/Assets.car
+.DS_Store

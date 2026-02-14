@@ -19,7 +19,7 @@ install: ## Create venv and install all dependencies
 sync: install ## Alias for install
 
 patch-py2app: ## Patch py2app zlib bug for uv-managed Python
-	@$(PYTHON) scripts/patch-py2app.py
+	@$(PYTHON) patch-py2app.py
 
 icon: ## Compile .icon into Assets.car + .icns (requires Xcode)
 	@echo "==> Compiling icon with actool..."
@@ -61,7 +61,7 @@ run: install ## Run the menu bar app (development)
 
 dev: install ## Run the bot only (headless, reads .env)
 	@if [ -f .env ]; then set -a && . ./.env && set +a; fi && \
-	$(UV) run python -m bot.main
+	$(UV) run python bot/main.py
 
 install-app: build ## Build and copy to /Applications
 	cp -r "$(APP_BUNDLE)" /Applications/

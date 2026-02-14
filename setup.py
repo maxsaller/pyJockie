@@ -24,11 +24,9 @@ OPTIONS = {
         "CFBundleIconName": "pyJockie",
         "LSUIElement": True,
     },
-    "packages": ["discord", "aiohttp", "rumps", "bot"],
+    "packages": ["discord", "aiohttp", "rumps", "bot", "nacl", "cffi"],
     "includes": [
         "discord.opus",
-        "nacl",
-        "nacl.bindings",
     ],
     "resources": [
         "bot/audio.py",

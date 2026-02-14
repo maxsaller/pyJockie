@@ -86,30 +86,37 @@ async def join(interaction: discord.Interaction):
         )
         return
 
-    # Move if connected elsewhere
-    if interaction.guild.voice_client:
-        await interaction.guild.voice_client.move_to(channel)
-        await interaction.response.send_message(f"Moved to **{channel.name}**.")
-    else:
-        vc = await channel.connect()
-        await interaction.response.send_message(
-            f"Joined **{channel.name}**. Now select **PyJockie** as your Spotify device."
-        )
+    # Defer immediately — voice connection can exceed Discord's 3s deadline
+    await interaction.response.defer()
 
-    state.voice_channel_id = channel.id
-    state.guild_id = interaction.guild.id
+    try:
+        # Move if connected elsewhere
+        if interaction.guild.voice_client:
+            await interaction.guild.voice_client.move_to(channel)
+            msg = f"Moved to **{channel.name}**."
+        else:
+            await channel.connect(timeout=15.0)
+            msg = f"Joined **{channel.name}**. Now select **PyJockie** as your Spotify device."
 
-    # Start audio source
-    vc = interaction.guild.voice_client
-    if vc.is_playing():
-        vc.stop()
+        state.voice_channel_id = channel.id
+        state.guild_id = interaction.guild.id
 
-    source = SpotifyAudioSource(FIFO_PATH)
-    source.start()
-    bot.audio_source = source
+        # Start audio source
+        vc = interaction.guild.voice_client
+        if vc.is_playing():
+            vc.stop()
 
-    vc.play(source, after=lambda e: log.error("Player error: %s", e) if e else None)
-    log.info("Audio source started, streaming from FIFO")
+        source = SpotifyAudioSource(FIFO_PATH)
+        source.start()
+        bot.audio_source = source
+
+        vc.play(source, after=lambda e: log.error("Player error: %s", e) if e else None)
+        log.info("Audio source started, streaming from FIFO")
+
+        await interaction.followup.send(msg)
+    except Exception as e:
+        log.exception("Failed to join voice channel")
+        await interaction.followup.send(f"Failed to join voice channel: {e}")
 
 
 @app_commands.command(name="leave", description="Disconnect from the voice channel")
@@ -118,14 +125,20 @@ async def leave(interaction: discord.Interaction):
         await interaction.response.send_message("Not connected to any voice channel.", ephemeral=True)
         return
 
-    if bot.audio_source:
-        bot.audio_source.cleanup()
-        bot.audio_source = None
-    await interaction.guild.voice_client.disconnect()
-    state.voice_channel_id = None
-    state.guild_id = None
-    await interaction.response.send_message("Disconnected.")
-    log.info("Disconnected from voice channel")
+    await interaction.response.defer()
+
+    try:
+        if bot.audio_source:
+            bot.audio_source.cleanup()
+            bot.audio_source = None
+        await interaction.guild.voice_client.disconnect()
+        state.voice_channel_id = None
+        state.guild_id = None
+        log.info("Disconnected from voice channel")
+        await interaction.followup.send("Disconnected.")
+    except Exception as e:
+        log.exception("Failed to leave voice channel")
+        await interaction.followup.send(f"Failed to disconnect: {e}")
 
 
 @app_commands.command(name="np", description="Show the currently playing track")
