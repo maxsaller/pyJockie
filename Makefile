@@ -19,7 +19,7 @@ install: ## Create venv and install all dependencies
 sync: install ## Alias for install
 
 patch-py2app: ## Patch py2app zlib bug for uv-managed Python
-	@$(PYTHON) -c "import pathlib,py2app.build_app;p=pathlib.Path(py2app.build_app.__file__);s=p.read_text();o='            self.copy_file(zlib.__file__, os.path.dirname(arcdir))';n='            if hasattr(zlib, \"__file__\") and zlib.__file__:\n                self.copy_file(zlib.__file__, os.path.dirname(arcdir))';(p.write_text(s.replace(o,n)),print('  Patched py2app zlib bug')) if o in s else print('  py2app zlib patch already applied')"
+	@$(PYTHON) scripts/patch-py2app.py
 
 build: install patch-py2app ## Build PyJockie.app bundle
 	@echo "==> Cleaning previous build..."
