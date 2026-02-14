@@ -10,3 +10,4 @@ __pycache__/
 build/
 build.log
 dist/
+resources/Assets.car
