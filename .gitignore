@@ -12,3 +12,5 @@ build.log
 dist/
 resources/Assets.car
 .DS_Store
+uv.lock
+docs/plans/
