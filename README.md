@@ -1,8 +1,8 @@
 # PyJockie
 
-A Discord bot that streams Spotify audio into a voice channel via Spotify Connect. Control playback entirely from the Spotify app on your phone or PC.
+A macOS menu bar app that streams Spotify audio into a Discord voice channel via Spotify Connect. Control playback entirely from the Spotify app.
 
-## Architecture
+## How It Works
 
 ```
 Spotify App (phone/PC)
@@ -15,35 +15,43 @@ Spotify App (phone/PC)
 
 ## Requirements
 
+- **macOS** (Apple Silicon or Intel)
 - **Spotify Premium** account
 - **Discord Bot** token ([create one here](https://discord.com/developers/applications))
-- **Docker** and **Docker Compose**
 
-## Setup
+## Quick Start (Development)
 
-1. Clone this repository.
+```bash
+# Install system dependencies
+brew install librespot ffmpeg opus
 
-2. Create a `.env` file with your Discord bot token:
-   ```
-   DISCORD_TOKEN=your_token_here
-   ```
+# Install Python dependencies
+uv venv && uv pip install -r bot/requirements.txt
 
-3. Start the stack:
-   ```bash
-   docker compose up -d --build
-   ```
+# Run the menu bar app
+python app.py
+```
 
-4. Invite the bot to your Discord server using the OAuth2 URL from the Discord Developer Portal (with `bot` and `applications.commands` scopes, plus `Connect` and `Speak` voice permissions).
+On first launch, the app will prompt for your Discord bot token.
+
+## Building the App
+
+```bash
+scripts/build-app.sh
+```
+
+This produces `dist/PyJockie.app` — a self-contained app bundling Python, librespot, ffmpeg, and libopus. Drag it to `/Applications` to install.
 
 ## Usage
 
-1. Join a voice channel in Discord.
-2. Run `/join` — the bot connects to your voice channel.
-3. Open Spotify on your phone/PC. In the **Devices** menu, select **PyJockie**.
-4. Play music — it streams through the Discord voice channel.
-5. Control playback (play, pause, skip, repeat, shuffle) from Spotify.
+1. Launch PyJockie (♫ appears in the menu bar).
+2. Click ♫ → **Start Streaming**.
+3. In Discord, type `/join` in any text channel while in a voice channel.
+4. Open Spotify → **Devices** → select **PyJockie**.
+5. Play music — it streams through the Discord voice channel.
+6. Control playback (play, pause, skip, repeat, shuffle) from Spotify.
 
-### Commands
+## Discord Commands
 
 | Command | Description |
 |---------|-------------|
@@ -53,29 +61,9 @@ Spotify App (phone/PC)
 
 ## Configuration
 
-Environment variables (set in `.env` or `docker-compose.yml`):
+The Discord token is stored in `~/.config/pyjockie/config.json` after first setup.
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DISCORD_TOKEN` | — | Discord bot token (required) |
-| `FIFO_PATH` | `/mnt/pipe/spotify.fifo` | Path to the audio FIFO |
-| `EVENT_PORT` | `8080` | Port for librespot event webhook |
-
-The librespot device name, bitrate, and other settings can be adjusted in `docker-compose.yml` under the `librespot` service environment variables.
-
-## Deploying on TrueNAS (Portainer)
-
-1. Install Portainer from the TrueNAS Apps catalog.
-2. In Portainer, go to **Stacks** → **Add Stack**.
-3. Paste the contents of `docker-compose.yml`.
-4. Add `DISCORD_TOKEN` as an environment variable.
-5. Deploy.
-
-## First-Time Spotify Authentication
-
-On first start, librespot advertises itself as **PyJockie** on your local network via Zeroconf/mDNS. Open Spotify, go to Devices, and select it. Credentials are cached automatically for subsequent restarts.
-
-> **Note:** Both the `librespot` and `bot` containers use `network_mode: host` so that Spotify apps on your LAN can discover the device via mDNS.
+For development, you can also set the `DISCORD_TOKEN` environment variable or use a `.env` file.
 
 ## License
 
