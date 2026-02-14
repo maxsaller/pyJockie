@@ -11,8 +11,17 @@ from state import AppState, TrackInfo, state
 
 log = logging.getLogger(__name__)
 
-FIFO_PATH = os.environ.get("FIFO_PATH", "/mnt/pipe/spotify.fifo")
+FIFO_PATH = os.environ.get("FIFO_PATH", "/tmp/pyjockie.fifo")
 EVENT_PORT = int(os.environ.get("EVENT_PORT", "8080"))
+
+
+def configure(fifo_path: str | None = None, event_port: int | None = None):
+    """Set runtime configuration before bot starts."""
+    global FIFO_PATH, EVENT_PORT
+    if fifo_path is not None:
+        FIFO_PATH = fifo_path
+    if event_port is not None:
+        EVENT_PORT = event_port
 
 
 class PyJockie(commands.Bot):
